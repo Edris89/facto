@@ -1,20 +1,6 @@
 
 # UNDER DEVELOPMENT
 
-
-
-# Created By
-
-Created by Edris Keyam
-
-
-
-# License
-
-Licensed under the MIT license.
-
-
-
 # Facto-Cli
 
 Is a colorfull interactive Cli for managing a Factorio Headless Server written in Python 3.
