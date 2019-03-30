@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
      name='factocli',  
-     version='0.1.1',
+     version='0.1.6',
      scripts=['factocli'] ,
      author="Edris Keyam",
      author_email="edriskeyam82@hotmail.com",
@@ -19,6 +19,7 @@ setuptools.setup(
          "License :: OSI Approved :: MIT License",
          "Operating System :: OS Independent",
      ],
+     install_requires=["PyInquirer"],
  )
 
 
