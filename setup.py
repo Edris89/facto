@@ -7,6 +7,7 @@ setuptools.setup(
      name='facto',  
      version='0.1',
      scripts=['facto'] ,
+     py_modules=['factomodule'],
      author="Edris Keyam",
      author_email="edriskeyam82@hotmail.com",
      description="A Cli for managing a Factorio Headless Server",

@@ -1,3 +1,9 @@
+from factomodule import install
 
 
-print("niceeee")
+
+
+print("test.py")
+
+install.newServer()
+
