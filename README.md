@@ -9,7 +9,12 @@ Is a colorfull interactive Cli for managing a Factorio Headless Server written i
 
 
 
-Created By Edris Keyam
+# Created By
+
+Created by Edris Keyam
 
 
 
+# License
+
+Licensed under the MIT license.
