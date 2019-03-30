@@ -3,9 +3,7 @@
 
 
 # facto
-This is a Cli for managing a Factorio Headless Server.
-
-
+This is a Colorfull Interactive Cli for managing a Factorio Headless Server written in Python3.
 
 
 
