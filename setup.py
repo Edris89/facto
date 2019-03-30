@@ -4,9 +4,9 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
-     name='facto',  
+     name='facto-cli',  
      version='0.1',
-     scripts=['facto'] ,
+     scripts=['facto-cli'] ,
      py_modules=['factomodule'],
      author="Edris Keyam",
      author_email="edriskeyam82@hotmail.com",
