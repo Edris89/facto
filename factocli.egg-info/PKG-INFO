@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
-Name: facto-cli
-Version: 0.1
+Name: factocli
+Version: 0.1.1
 Summary: A Cli for managing a Factorio Headless Server
 Home-page: https://github.com/Edris89/facto
 Author: Edris Keyam

@@ -1,0 +1,7 @@
+README.md
+factocli
+setup.py
+factocli.egg-info/PKG-INFO
+factocli.egg-info/SOURCES.txt
+factocli.egg-info/dependency_links.txt
+factocli.egg-info/top_level.txt

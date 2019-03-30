@@ -4,10 +4,9 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
-     name='facto-cli',  
-     version='0.1',
-     scripts=['facto-cli'] ,
-     py_modules=['factomodule'],
+     name='factocli',  
+     version='0.1.1',
+     scripts=['factocli'] ,
      author="Edris Keyam",
      author_email="edriskeyam82@hotmail.com",
      description="A Cli for managing a Factorio Headless Server",

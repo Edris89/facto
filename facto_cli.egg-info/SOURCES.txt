@@ -1,7 +1,0 @@
-README.md
-facto-cli
-setup.py
-facto_cli.egg-info/PKG-INFO
-facto_cli.egg-info/SOURCES.txt
-facto_cli.egg-info/dependency_links.txt
-facto_cli.egg-info/top_level.txt
