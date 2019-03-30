@@ -1,0 +1,7 @@
+README.md
+facto
+setup.py
+facto.egg-info/PKG-INFO
+facto.egg-info/SOURCES.txt
+facto.egg-info/dependency_links.txt
+facto.egg-info/top_level.txt
