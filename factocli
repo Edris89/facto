@@ -1,29 +1,29 @@
 #!/usr/bin/python3
 
 
-
-
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function, unicode_literals
-
 from PyInquirer import style_from_dict, Token, prompt, Separator
 
 from examples import custom_style_1
 from examples import custom_style_2
 from examples import custom_style_3
-
 from pprint import pprint
-
+import os, errno
+import wget
+import urllib.request
+import shutil
+from pathlib import Path
 
 
 
 #######Install New Headless Server################
-def ask_where_to_install():
+def ask_path_to_install_server():
     where_to_install_prompt = {
         'type': 'input',
         'name': 'install_path',
-        'message': 'Where do you want to install factorio?',
+        'message': 'Where do you want to install factorio? # /opt is recommended!',
     }
     answers = prompt(where_to_install_prompt)
     return answers['install_path']
@@ -36,6 +36,32 @@ def confirm_where_to_install(path):
     }
     answers = prompt(confirm_where_to_install)
     return answers['confirm_where_to_install']
+
+def download_latest_factorio_experimental_headless_server(install_path):
+    latest_experimental_download_url = "https://www.factorio.com/get-download/latest/headless/linux64"
+    file_name = wget.download(latest_experimental_download_url)
+    
+    current_directory = os.getcwd()
+    print("\n")
+    full_path_of_file = current_directory + "/" + file_name
+    print(full_path_of_file)
+    
+    if(os.path.isfile(full_path_of_file)):
+        print("File exists")
+        print("Extracting file to the given path")
+        import tarfile
+        tar = tarfile.open(full_path_of_file) 
+        tar.extractall(path=install_path) #untar file to the given install path
+        tar.close()
+        if(os.path.isdir(install_path)):
+            print("File has been extracted to " + install_path)
+        if(os.path.isdir(install_path) == False):
+            print("Something wreng wrong checking if the extracted directory exists")
+        
+    if(os.path.isfile(full_path_of_file) == False):
+        print("something went wrong checking if the file exists")
+        print("please try again")
+    
 #########END Install New Headless Server#############
 
 
@@ -82,11 +108,27 @@ def ask_what_to_do():
 def main():
     option = ask_what_to_do()
     if(option == 'Install New Server'):
-        install_path = ask_where_to_install()
+        install_path = ask_path_to_install_server()
         print(install_path)
         yesorno = confirm_where_to_install(install_path)
         if(yesorno):
-            print("aright installing")
+            #Check wether the path exists
+            print("Checking Path...")
+            path_exists = os.path.isdir(install_path)
+            if(path_exists):
+                print("The directory " + install_path + "exists proceeding...")
+                try:
+                    #os.makedirs(install_path, exist_ok=False)
+                    print("Proceeding with the install...")
+                    #Download the latest factorio expermimental headless server file
+                    download_latest_factorio_experimental_headless_server(install_path)    
+                except FileExistsError:
+                    # directory already exists
+                    print("Error Creating the directory in " + install_path)        
+            if(path_exists == False):
+                print("The directory" + install_path + "doesn't exists")
+                print("please make sure the directory exists")
+
         if(yesorno == False):
             print("Please Try Again")
         
