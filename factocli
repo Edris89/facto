@@ -17,6 +17,9 @@ from pathlib import Path
 import subprocess
 
 
+
+
+
 #######Install Latest Experimental Headless Server################
 class InstallNewServer:
     # def __init__(self):
@@ -111,13 +114,124 @@ def create_user_and_group_and_add_user_to_group(install_path):
     print("Done")
     #sudo chown -R factorio:factorio /opt/factorio
     
-    print("Making user owner of the new created directory " + install_path + "/" + "factorio")
-    subprocess.run(["sudo", "chown", "-R","factorio:factorio", install_path + "/" + "factorio"])
+    factorio_path = install_path + "/" + "factorio"
+    print("Making user owner of the new created directory " + factorio_path)
+    subprocess.run(["sudo", "chown", "-R","factorio:factorio", factorio_path])
     print("Done")
+    make_copy_of_server_settings_json_file(factorio_path)
+
+
+def make_copy_of_server_settings_json_file(factorio_path):
+    #sudo cp server-settings.example.json server-settings.json
+    json_server_settings_example_file_path = factorio_path + "/" + "data" + "/" + "server-settings.example.json"
+    json_server_settings_example_path = factorio_path + "/" + "data" + "/" + "server-settings.json"
+    shutil.copy(json_server_settings_example_file_path,json_server_settings_example_path)
+    if(os.path.isfile(json_server_settings_example_path)):
+        print("Server Settings Json Copied and Created")
+        create_save_yesorno = ask_for_creating_a_new_save_file_or_upload_your_own()
+        if(create_save_yesorno == True):
+            create_new_save_file(factorio_path)
+        elif(create_save_yesorno == False):
+            pass
+    else:
+        print("Something went wrong with copying server-settings.example.json")
+
+
+def ask_for_creating_a_new_save_file_or_upload_your_own():
+    create_new_save_or_use_own_save_prompt = {
+            'type': 'confirm',
+            'name': 'save_file',
+            'message': 'Do you want to create a new save file?',
+        }
+    answers = prompt(create_new_save_or_use_own_save_prompt)
+    return answers['save_file']
+
+
+def create_new_save_file(factorio_path):
+    print("Creating a new saves directory")
+    os.mkdir(factorio_path + "/" + "saves")
+    saves_directory_path = factorio_path + "/" + "saves"
+    if(os.path.isdir(saves_directory_path)):
+        print("Done")
+        #./bin/x64/factorio --create ./saves/my-save.zip
+        print("Changing directory to create save file")
+        os.chdir(factorio_path)
+        print(factorio_path)
+        print("Creating a new save file")
+        subprocess.run(["./bin/x64/factorio", "--create", "./saves/my-save.zip"])
+        #if(os.path.isfile(factorio_path + "/" + "saves" + ))
+        print("New save file created")
+        create_service_file_in_systemd(factorio_path)
+    else:
+        print("Something went wrong creating saves directory")
+
+
+def create_service_file_in_systemd(factorio_path):
+    #create a new service file /etc/systemd/system/factorio.service
+    systemd_path = "/etc/systemd/system"
+    os.chdir(systemd_path)
+    
+    execstart_string = (f"{factorio_path}/bin/x64/factorio --start-server {factorio_path}/saves/my-save.zip --server-settings {factorio_path}/data/server-settings.json")
+
+    service_file_string =(f"""
+        [Unit]
+        Description=Factorio Headless Server
+
+        [Service]
+        Type=simple
+        User=factorio
+        ExecStart={execstart_string}
+        """)
+
+    with open("factorio.service", "w") as file:
+        file.write(service_file_string)
+
+    if(os.path.isfile(systemd_path + "/" + "factorio.service")):
+        print("Service file factorio.service created in /etc/systemd/system")
+        chown_factorio_map_for_factorio_user(factorio_path)
+
+    else:
+        print("Something went wrong creating the service file")
+
+
+def chown_factorio_map_for_factorio_user(factorio_path):
+    #sudo chown -R factorio: /opt/factorio
+    print("Performing factorio user access")
+    print(factorio_path)
+    #subprocess.run(["chown", "-R", "factorio:factorio " + factorio_path])
+    #subprocess.run(["chown", "-R", "factorio: ", factorio_path])
+    subprocess.run(["chown", "-R", "factorio:factorio", factorio_path])    
+    reload_daemon()
+
+
+def reload_daemon():
+    #systemctl daemon-reload
+    print("Reloading daemon")
+    subprocess.run(["systemctl", "daemon-reload"])
+    start_factorio_service()
+
+def start_factorio_service():
+    #systemctl start factorio
+    print("Starting factorio service")
+    subprocess.run(["systemctl", "start", "factorio"])
+    check_if_service_is_running()
+
+
+def check_if_service_is_running():
+    #systemctl is-active --quiet service
+    is_service_running = subprocess.run(["systemctl", "is-active", "--quiet", "factorio.service"])
+    if(is_service_running == 0):
+        print("Congratulations factorio is up and running!")
+    elif(is_service_running != 0):
+        print("Something went wrong checking if factorio.service is running")       
+
+
+def use_own_save_file():
+    pass
+
 
 def check_latest_experimental_version():
     print("Checking...")
-
 
 
 def check_latest_stable_version():
@@ -132,7 +246,8 @@ def ask_what_to_do():
         'name': 'mainoption',
         'message': 'What do you want to do?',
         'choices': [
-            'Install New Server', 
+            'Install Latest Stable Server',
+            'Install Latest Experimental Server', 
             'Update Existing Server',
             Separator(), 
             'Get Installed Server Version']
@@ -143,7 +258,7 @@ def ask_what_to_do():
 
 def main():
     option = ask_what_to_do()
-    if(option == 'Install New Server'):
+    if(option == 'Install Latest Experimental Server'):
         install_path = installnewserver.ask_path_to_install_server()
         print(install_path)
         yesorno = installnewserver.confirm_where_to_install(install_path) 
@@ -188,7 +303,6 @@ def main():
 
         if(yesorno == False):
             print("Please Try Again")
-
 
         
     if(option == 'Update Existing Server'):
