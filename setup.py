@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
      name='factocli',  
-     version='0.2.0',
+     version='0.2.1',
      scripts=['factocli'] ,
      author="Edris Keyam",
      author_email="edriskeyam82@hotmail.com",

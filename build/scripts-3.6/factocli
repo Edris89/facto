@@ -14,7 +14,7 @@ import wget
 import urllib.request
 import shutil
 from pathlib import Path
-
+import subprocess
 
 
 #######Install Latest Experimental Headless Server################
@@ -44,6 +44,7 @@ class InstallNewServer:
         
 
     def download_latest_factorio_experimental_headless_server(self,install_path):
+        print("Downloading latest experimental release...")
         latest_experimental_download_url = "https://www.factorio.com/get-download/latest/headless/linux64"
         file_name = wget.download(latest_experimental_download_url)
         
@@ -51,7 +52,7 @@ class InstallNewServer:
         print("\n")
         full_path_of_file = current_directory + "/" + file_name
         print(full_path_of_file)
-        
+
         if(os.path.isfile(full_path_of_file)):
             print("File exists")
             print("Extracting file to the given path")
@@ -61,12 +62,16 @@ class InstallNewServer:
             tar.close()
             if(os.path.isdir(install_path)):
                 print("File has been extracted to " + install_path)
-                
-            if(os.path.isdir(install_path) == False):
-                print("Something wreng wrong checking if the extracted directory exists")
+                print("Removing downloaded tar file...")
+                print(full_path_of_file)
+                os.remove(full_path_of_file)
+                print("File removed")
+                create_user_and_group_and_add_user_to_group(install_path)
+            elif(os.path.isdir(install_path) == False):
+                print("Something wreng wrong check if the extracted directory exists")
             
-        if(os.path.isfile(full_path_of_file) == False):
-            print("something went wrong checking if the file exists")
+        elif(os.path.isfile(full_path_of_file) == False):
+            print("something went wrong check if the file exists")
             print("please try again")
 #########END Latest Experimental Install Headless Server#############
 
@@ -97,6 +102,18 @@ class UpdateExistingServer:
 
 
 
+
+def create_user_and_group_and_add_user_to_group(install_path):
+    print("Creating user & group")
+    print("Adding user to created group")
+    subprocess.run(["sudo", "adduser", "--disabled-login", "--no-create-home", "--gecos", "factorio", "factorio"])
+    #sudo adduser --disabled-login --no-create-home --gecos factorio factorio
+    print("Done")
+    #sudo chown -R factorio:factorio /opt/factorio
+    
+    print("Making user owner of the new created directory " + install_path + "/" + "factorio")
+    subprocess.run(["sudo", "chown", "-R","factorio:factorio", install_path + "/" + "factorio"])
+    print("Done")
 
 def check_latest_experimental_version():
     print("Checking...")
@@ -140,7 +157,7 @@ def main():
                 path_exists = os.path.isdir(new_install_path)
                 print(new_install_path)
                 if(path_exists):
-                    print("The directory " + new_install_path + " exists proceeding...")
+                    print("The directory " + new_install_path + " exists...")
                     try:
                         #os.makedirs(install_path, exist_ok=False)
                         print("Proceeding with the install...")
@@ -152,11 +169,11 @@ def main():
                 if(path_exists == False):
                     print("The directory" + new_install_path + "doesn't exists")
                     print("please make sure the directory exists")
-            
+
             else: 
                 path_exists = os.path.isdir(install_path)
                 if(path_exists):
-                    print("The directory " + install_path + " exists proceeding...")
+                    print("The directory " + install_path + " exists...")
                     try:
                         #os.makedirs(install_path, exist_ok=False)
                         print("Proceeding with the install...")
