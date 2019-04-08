@@ -18,10 +18,9 @@ import subprocess
 
 #Custom Made Imports
 
-from custom_imports import install_server
-from custom_imports import update_server
-from custom_imports import remove_server
-
+from custom_imports import Install_server
+from custom_imports import Update_server
+from custom_imports import Remove_server
 
 
 
@@ -52,11 +51,11 @@ def ask_what_to_do():
 def main():
     option = ask_what_to_do()
     if(option == 'Install Latest Experimental Server'):
-        install_server.experimental_server_main()
+        Install_server.experimental_server_main()
 
         
     if(option == 'Update Existing Server'):
-        update_server.update_main()
+        Update_server.update_main()
 
     
     if(option == 'Get Installed Server Version'):

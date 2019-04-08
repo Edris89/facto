@@ -1,11 +1,16 @@
 import setuptools
 
+from custom_imports import Install_server
+from custom_imports import Update_server
+from custom_imports import Remove_server
+
+
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
     name='factocli',  
-    version='0.2.6',
+    version='0.3.0',
     scripts=['factocli'] ,
     author="Edris Keyam",
     author_email="edriskeyam82@hotmail.com",
