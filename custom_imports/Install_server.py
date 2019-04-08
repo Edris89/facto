@@ -13,8 +13,7 @@ import subprocess
 
 
 
-latest_experimental_server_url  = "https://www.factorio.com/get-download/latest/headless/linux64"
-latest_stable_server_url        = "asdfdslkjlkj"
+
 
 
 
@@ -38,9 +37,9 @@ def confirm_where_to_install(path):
     return answers['confirm_where_to_install']
     
 
-def download_latest_factorio_experimental_headless_server(install_path):
-    print("Downloading latest experimental release...")
-    file_name = wget.download(latest_experimental_server_url)
+def download_latest_factorio_headless_server(install_path, url_version):
+    print("Downloading latest release...")
+    file_name = wget.download(url_version)
     
     current_directory = os.getcwd()
     print("\n")
@@ -194,7 +193,7 @@ def check_if_service_is_running():
 
 
 
-def install_experimental_server():
+def install_server(url_version):
     install_path = ask_path_to_install_server()
     print(install_path)
     yesorno = confirm_where_to_install(install_path) 
@@ -213,7 +212,7 @@ def install_experimental_server():
                     #os.makedirs(install_path, exist_ok=False)
                     print("Proceeding with the install...")
                     #Download the latest factorio expermimental headless server file
-                    download_latest_factorio_experimental_headless_server(new_install_path)    
+                    download_latest_factorio_headless_server(new_install_path,url_version)    
                 except FileExistsError:
                     # directory already exists
                     print("Error Creating the directory in " + new_install_path)        
@@ -229,7 +228,7 @@ def install_experimental_server():
                     #os.makedirs(install_path, exist_ok=False)
                     print("Proceeding with the install...")
                     #Download the latest factorio expermimental headless server file
-                    download_latest_factorio_experimental_headless_server(install_path)    
+                    download_latest_factorio_headless_server(install_path,url_version)    
                 except FileExistsError:
                     # directory already exists
                     print("Error Creating the directory in " + install_path)        
@@ -242,17 +241,14 @@ def install_experimental_server():
 
 
 
-def install_stable_server(latest_stable_server_url):
-    pass
-
-
-
 
 
 def experimental_server_main():
-    install_experimental_server()
+    url_latest_version = "https://www.factorio.com/get-download/latest/headless/linux64"
+    install_server(url_latest_version)
 
 
 
 def stable_server_main():
-    install_stable_server(latest_stable_server_url)
+    url_stable_version = "https://www.factorio.com/get-download/stable/headless/linux64"
+    install_server(url_stable_version)
