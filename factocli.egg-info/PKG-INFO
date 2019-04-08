@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: factocli
-Version: 0.2.3
+Version: 0.2.4
 Summary: A Cli for managing a Factorio Headless Server
 Home-page: https://github.com/Edris89/facto
 Author: Edris Keyam
@@ -58,5 +58,5 @@ Description:
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
+Classifier: Operating System :: Linux
 Description-Content-Type: text/markdown
