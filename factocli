@@ -26,6 +26,8 @@ from custom_imports import Update_server
 from custom_imports import Remove_server
 from custom_imports import scrape_website
 
+factocli_version = "0.3.2"
+
 factorio_string = """
 ___________              __               .__         _________ .____    .___ 
 \_   _____/____    _____/  |_  ___________|__| ____   \_   ___ \|    |   |   |
@@ -53,7 +55,9 @@ def ask_what_to_do():
             'Install Webserver nGinx. Communicates with a TCP Socket (Socket IO)',
             Separator(),
             'Install HTTP API. For Developers (Uses flask)',
-            'Install Android App API. Required for the android app! (SocketIO)'
+            'Install Android App API. Required for the android app! (SocketIO)',
+            Separator(),
+            'Remove Existing Server'
             ]
     }
     answers = prompt(what_to_do_prompt, style=custom_style_3)
@@ -71,11 +75,12 @@ def main():
         
     if(option == 'Update Existing Server'):
         Update_server.update_main()
-
     
     if(option == 'Get Installed Server Version'):
         print("Getting the installed server version")
-        
+    
+    if(option == 'Remove Existing Server'):
+        Remove_server.remove_server_main()
 
 
 def get_date_and_time():
@@ -85,12 +90,14 @@ def get_date_and_time():
     return date_and_time
 
 
+
 def program_information():
     print(factorio_string)              # Prints the ASCII Art 
     latest_stable_version ,latest_experimental_version = scrape_website.scrape_website_main()
     print(colored("Current Date and Time: ","red") + get_date_and_time())
-    print(colored("Latest Experimental Version: ", "red") + latest_experimental_version)
-    print(colored("Latest Stable Version: ", "red") + latest_stable_version)
+    print(colored("Latest Factorio Experimental Version: ", "red") + latest_experimental_version)
+    print(colored("Latest Factorio Stable Version: ", "red") + latest_stable_version)
+    print(colored("Factocli Version: ", "red") + factocli_version)
     print("For more information visit the Github Documentation site: https://github.com/Edris89/facto")
     print("\n")
 

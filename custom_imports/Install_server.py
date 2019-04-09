@@ -94,9 +94,19 @@ def make_copy_of_server_settings_json_file(factorio_path):
         if(create_save_yesorno == True):
             create_new_save_file(factorio_path)
         elif(create_save_yesorno == False):
-            pass
+            yesorno = ask_for_save_file_config()
+            if(yesorno):
+                print("Launching save file creator")
+                save_file_creator_main()
+            elif(yesorno == False):
+                print("Factorio server needs a save file to run, please provide the save.zip in /factorio/saves directory")
+
     else:
         print("Something went wrong with copying server-settings.example.json")
+
+
+def save_file_creator_main():
+    pass
 
 
 def ask_for_creating_a_new_save_file_or_upload_your_own():
@@ -107,6 +117,17 @@ def ask_for_creating_a_new_save_file_or_upload_your_own():
         }
     answers = prompt(create_new_save_or_use_own_save_prompt)
     return answers['save_file']
+
+
+
+def ask_for_save_file_config():
+    save_file_config = {
+            'type': 'confirm',
+            'name': 'save_file_creator',
+            'message': 'Do you want to run the save file creator?',
+        }
+    answers = prompt(save_file_config)
+    return answers['save_file_creator']
 
 
 def create_new_save_file(factorio_path):
