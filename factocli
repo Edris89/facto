@@ -26,7 +26,7 @@ from custom_imports import Update_server
 from custom_imports import Remove_server
 from custom_imports import scrape_website
 
-factocli_version = "0.3.2"
+factocli_version = "0.3.3"
 
 factorio_string = """
 ___________              __               .__         _________ .____    .___ 
@@ -57,7 +57,12 @@ def ask_what_to_do():
             'Install HTTP API. For Developers (Uses flask)',
             'Install Android App API. Required for the android app! (SocketIO)',
             Separator(),
-            'Remove Existing Server'
+            'Remove Existing Server',
+            'Remove Webserver Apache2',
+            'Remove Webserver nGinx',
+            'Remove HTTP API for developers',
+            'Remove Android API. Used by the android app',
+            Separator()
             ]
     }
     answers = prompt(what_to_do_prompt, style=custom_style_3)
