@@ -36,5 +36,6 @@ def upload_file():
 			flash('File(s) successfully uploaded')
 			return redirect('/')
 
+
 if __name__ == "__main__":
     app.run(debug=True)
