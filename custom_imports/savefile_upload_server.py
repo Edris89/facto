@@ -5,8 +5,10 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "secret"
-app.config['UPLOAD_FOLDER'] = "/home/e3s/Documents/scripts/mypackages/facto/custom_imports/templates/UPLOAD_FOLDER"
+#app.config['UPLOAD_FOLDER'] = "/home/e3s/Documents/scripts/mypackages/facto/custom_imports/templates/UPLOAD_FOLDER"
+app.config['UPLOAD_FOLDER'] = "/home/e3s/Documents/facto/facto/custom_imports/UPLOAD_FOLDER"
 app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024
+
 
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'zip'])
@@ -17,7 +19,8 @@ def allowed_file(filename):
 @app.route('/')
 def index():
 	return render_template('index.html')
-
+                                                                                                                                                               
+         
 
 @app.route('/', methods=['POST'])
 def upload_file():
@@ -36,6 +39,6 @@ def upload_file():
 			flash('File(s) successfully uploaded')
 			return redirect('/')
 
-
+#86.88.42.33
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

@@ -13,7 +13,7 @@ import subprocess
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import json
-
+from termcolor import colored
 
 settings_file = "settings.json"
 
@@ -85,6 +85,7 @@ def create_user_and_group_and_add_user_to_group(install_path):
     make_copy_of_server_settings_json_file(factorio_path)
 
 
+
 def make_copy_of_server_settings_json_file(factorio_path):
     #sudo cp server-settings.example.json server-settings.json
     json_server_settings_example_file_path = factorio_path + "/" + "data" + "/" + "server-settings.example.json"
@@ -92,12 +93,14 @@ def make_copy_of_server_settings_json_file(factorio_path):
     shutil.copy(json_server_settings_example_file_path,json_server_settings_example_path)
     if(os.path.isfile(json_server_settings_example_path)):
         print("Server Settings Json Copied and Created")
-        create_save_yesorno = ask_for_creating_a_new_save_file_or_upload_your_own()
-        if(create_save_yesorno == True):
-            create_new_save_file(factorio_path)
-        elif(create_save_yesorno == False):
-            print("Launching webserver for savefile upload")
-            launch_savefile_webserver()
+        create_service_file_in_systemd(factorio_path)
+        
+        # create_save_yesorno = ask_for_creating_a_new_save_file_or_upload_your_own()
+        # if(create_save_yesorno == True):
+        #     create_new_save_file(factorio_path)
+        # elif(create_save_yesorno == False):
+        #     print("Launching webserver for savefile upload")
+            #launch_savefile_webserver()
             # yesorno = ask_for_save_file_config()
             # if(yesorno):
             #     print("Launching save file creator")
@@ -110,24 +113,41 @@ def make_copy_of_server_settings_json_file(factorio_path):
 
 
 
-app = Flask(__name__)
-# app.config['UPLOAD_FOLDER']
+def waiting_for_save_file(factorio_path):
+    print(colored("Please make a new game in factorio and save it", "red"))
+    print(colored("When done use one of the following commands to copy your save file", "red"))
+    print(colored("Copy file from a remote host to local host SCP example:", "magenta"))
+    print(colored(f"scp username@from_host:file.txt {factorio_path}", "magenta"))
+    print(colored("Or", "magenta"))
+    print(colored("Copy file from local host to a remote host SCP example:", "magenta"))
+    print(colored(f"scp file.txt username@to_host:{factorio_path}", "magenta"))
+    print(colored("Waiting for a save file....", "magenta"))
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+
+
+
+
+
+
+
+# app = Flask(__name__)
+# # app.config['UPLOAD_FOLDER']
+
+# @app.route('/')
+# def index():
+#     return render_template('index.html')
     
-@app.route('/upload', methods = ['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        f = request.files['file']
-        f.save(secure_filename(f.filename))
+# @app.route('/upload', methods = ['GET', 'POST'])
+# def upload_file():
+#     if request.method == 'POST':
+#         f = request.files['file']
+#         f.save(secure_filename(f.filename))
         
-        return 'file uploaded successfully'
+#         return 'file uploaded successfully'
 
 
-def launch_savefile_webserver():
-    app.run(debug = True)
+# def launch_savefile_webserver():
+#     app.run(debug = True)
 
     
 
@@ -182,7 +202,7 @@ def create_service_file_in_systemd(factorio_path):
     systemd_path = "/etc/systemd/system"
     os.chdir(systemd_path)
     
-    execstart_string = (f"{factorio_path}/bin/x64/factorio --start-server {factorio_path}/saves/my-save.zip --server-settings {factorio_path}/data/server-settings.json")
+    execstart_string = (f"{factorio_path}/bin/x64/factorio --start-server {factorio_path}/saves/my-save.zip --server-settings {factorio_path}/data/server-settings.json ")
 
     service_file_string =(f"""
         [Unit]
@@ -212,8 +232,9 @@ def chown_factorio_map_for_factorio_user(factorio_path):
     #subprocess.run(["chown", "-R", "factorio:factorio " + factorio_path])
     #subprocess.run(["chown", "-R", "factorio: ", factorio_path])
     subprocess.run(["chown", "-R", "factorio:factorio", factorio_path])    
-    reload_daemon()
-    write_factorio_path_to_json(factorio_path)
+    reload_daemon(factorio_path)
+    #write_factorio_path_to_json(factorio_path)
+
 
 
 
@@ -222,17 +243,18 @@ def write_factorio_path_to_json(factorio_path):
         array = json.load(f)
     
 
-def reload_daemon():
+def reload_daemon(factorio_path):
     #systemctl daemon-reload
     print("Reloading daemon")
     subprocess.run(["systemctl", "daemon-reload"])
-    start_factorio_service()
+    #start_factorio_service()
+    waiting_for_save_file(factorio_path)
 
 def start_factorio_service():
     #systemctl start factorio
     print("Starting factorio service")
     subprocess.run(["systemctl", "start", "factorio"])
-    check_if_service_is_running()
+    #check_if_service_is_running()
 
 
 def check_if_service_is_running():
@@ -242,9 +264,6 @@ def check_if_service_is_running():
         print("Congratulations factorio is up and running!")
     elif(is_service_running != 0):
         print("Something went wrong checking if factorio.service is running")  
-
-
-
 
 
 
