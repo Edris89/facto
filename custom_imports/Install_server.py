@@ -10,8 +10,8 @@ import urllib.request
 import shutil
 from pathlib import Path
 import subprocess
-
-
+from flask import Flask, render_template, request
+from werkzeug.utils import secure_filename
 
 
 
@@ -94,15 +94,41 @@ def make_copy_of_server_settings_json_file(factorio_path):
         if(create_save_yesorno == True):
             create_new_save_file(factorio_path)
         elif(create_save_yesorno == False):
-            yesorno = ask_for_save_file_config()
-            if(yesorno):
-                print("Launching save file creator")
-                save_file_creator_main()
-            elif(yesorno == False):
-                print("Factorio server needs a save file to run, please provide the save.zip in /factorio/saves directory")
+            print("Launching webserver for savefile upload")
+            launch_savefile_webserver()
+            # yesorno = ask_for_save_file_config()
+            # if(yesorno):
+            #     print("Launching save file creator")
+            #     save_file_creator_main()
+            # elif(yesorno == False):
+            #     print("Factorio server needs a save file to run, please provide the save.zip in /factorio/saves directory")
 
     else:
         print("Something went wrong with copying server-settings.example.json")
+
+
+
+app = Flask(__name__)
+# app.config['UPLOAD_FOLDER']
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+    
+@app.route('/upload', methods = ['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files['file']
+        f.save(secure_filename(f.filename))
+        
+        return 'file uploaded successfully'
+
+
+def launch_savefile_webserver():
+    app.run(debug = True)
+
+    
+
 
 
 def save_file_creator_main():
