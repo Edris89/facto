@@ -12,8 +12,10 @@ from pathlib import Path
 import subprocess
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
+import json
 
 
+settings_file = "settings.json"
 
 
 
@@ -211,7 +213,14 @@ def chown_factorio_map_for_factorio_user(factorio_path):
     #subprocess.run(["chown", "-R", "factorio: ", factorio_path])
     subprocess.run(["chown", "-R", "factorio:factorio", factorio_path])    
     reload_daemon()
+    write_factorio_path_to_json(factorio_path)
 
+
+
+def write_factorio_path_to_json(factorio_path):
+    with open(settings_file, 'r') as f:
+        array = json.load(f)
+    
 
 def reload_daemon():
     #systemctl daemon-reload
