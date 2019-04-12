@@ -15,7 +15,13 @@ from werkzeug.utils import secure_filename
 import json
 from termcolor import colored
 
+import multiprocessing
+import time
+
+
 settings_file = "settings.json"
+
+
 
 
 
@@ -93,8 +99,9 @@ def make_copy_of_server_settings_json_file(factorio_path):
     shutil.copy(json_server_settings_example_file_path,json_server_settings_example_path)
     if(os.path.isfile(json_server_settings_example_path)):
         print("Server Settings Json Copied and Created")
-        create_service_file_in_systemd(factorio_path)
-        
+        waiting_for_save_file(factorio_path)
+        #create_service_file_in_systemd(factorio_path)
+        #launch_savefile_webserver()
         # create_save_yesorno = ask_for_creating_a_new_save_file_or_upload_your_own()
         # if(create_save_yesorno == True):
         #     create_new_save_file(factorio_path)
@@ -113,17 +120,67 @@ def make_copy_of_server_settings_json_file(factorio_path):
 
 
 
+
+
 def waiting_for_save_file(factorio_path):
-    print(colored("Please make a new game in factorio and save it", "red"))
-    print(colored("When done use one of the following commands to copy your save file", "red"))
-    print(colored("Copy file from a remote host to local host SCP example:", "magenta"))
-    print(colored(f"scp username@from_host:file.txt {factorio_path}", "magenta"))
-    print(colored("Or", "magenta"))
-    print(colored("Copy file from local host to a remote host SCP example:", "magenta"))
-    print(colored(f"scp file.txt username@to_host:{factorio_path}", "magenta"))
-    print(colored("Waiting for a save file....", "magenta"))
+    #/opt/factorio
+    print("Creating a new saves directory")
+    os.mkdir(factorio_path + "/" + "saves")
+    saves_directory_path = factorio_path + "/" + "saves"
+    if(os.path.isdir(saves_directory_path)):
+        print("Done")
+        #./bin/x64/factorio --create ./saves/my-save.zip
+        print("Changing directory to saves directory")
+        os.chdir(saves_directory_path)
+        list_dir = os.listdir(saves_directory_path)
+        print("Files in saves directory" + str(list_dir))
+        print("Factorio can't start without a save file")
+        # print("Waiting for a save file to be uploaded")
+        print(colored("Please make a new game in factorio and save it", "magenta"))
+        print(colored("When done use one of the following commands to copy your save file", "magenta"))
+        print(colored("Copy file from a remote host to local host SCP example:", "magenta"))
+        print(colored(f"scp username@from_host:file.txt {saves_directory_path}", "magenta"))
+        print(colored("Or", "magenta"))
+        print(colored("Copy file from local host to a remote host SCP example:", "magenta"))
+        print(colored(f"scp file.txt username@to_host:{saves_directory_path}", "magenta"))
+        print(colored("Waiting for a save file to be uploaded", "magenta"))
+        while not os.listdir(saves_directory_path):
+            time.sleep(1)
+
+        if (os.listdir(saves_directory_path)):
+            # read file
+            #print("Detected file(s)")
+            detected_files_list = os.listdir(saves_directory_path)
+            print("detected files" + str(detected_files_list))
+            
+            files = []
+            for file in detected_files_list:
+                files.append({"name" : file})
+            print(files)
+            #if(extensions == ".zip"):
+            #print("Zip file(s) detected")
+            print("Please choose the save file to use for the factorio server")
+            which_save_file_prompt = [
+                {
+                    'type': 'checkbox',
+                    'message': 'Select save file',
+                    'name': 'whick_save_file',
+                    'choices': files,
+                    'validate': lambda answer: 'You must choose at least one save file.' \
+                        if len(answer) == 0 else True
+                }
+            ]
+            answers = prompt(which_save_file_prompt, style=custom_style_2)
+            print(answers)
+        else:
+            raise ValueError("%s isn't a file!" % saves_directory_path)
 
 
+    else:
+        print("Something went wrong creating saves directory")
+    
+    
+    # while(True):
 
 
 
@@ -146,15 +203,16 @@ def waiting_for_save_file(factorio_path):
 #         return 'file uploaded successfully'
 
 
-# def launch_savefile_webserver():
-#     app.run(debug = True)
 
+
+# def launch_savefile_webserver():
+#     print("Launching Upload Webserver with ngrok")
+#     p = multiprocessing.Process(target=start_savefile_webserver)
+#     p.start()
+    
     
 
 
-
-def save_file_creator_main():
-    pass
 
 
 def ask_for_creating_a_new_save_file_or_upload_your_own():
@@ -192,9 +250,14 @@ def create_new_save_file(factorio_path):
         subprocess.run(["./bin/x64/factorio", "--create", "./saves/my-save.zip"])
         #if(os.path.isfile(factorio_path + "/" + "saves" + ))
         print("New save file created")
-        create_service_file_in_systemd(factorio_path)
+        #create_service_file_in_systemd(factorio_path)
+        waiting_for_save_file
     else:
         print("Something went wrong creating saves directory")
+
+
+
+
 
 
 def create_service_file_in_systemd(factorio_path):
@@ -202,7 +265,7 @@ def create_service_file_in_systemd(factorio_path):
     systemd_path = "/etc/systemd/system"
     os.chdir(systemd_path)
     
-    execstart_string = (f"{factorio_path}/bin/x64/factorio --start-server {factorio_path}/saves/my-save.zip --server-settings {factorio_path}/data/server-settings.json ")
+    execstart_string = (f"{factorio_path}/bin/x64/factorio --start-server {factorio_path}/saves/my-save.zip --server-settings {factorio_path}/data/server-settings.json --rcon-port 25575 --rcon-password factory")
 
     service_file_string =(f"""
         [Unit]
@@ -248,7 +311,7 @@ def reload_daemon(factorio_path):
     print("Reloading daemon")
     subprocess.run(["systemctl", "daemon-reload"])
     #start_factorio_service()
-    waiting_for_save_file(factorio_path)
+    #waiting_for_save_file(factorio_path)
 
 def start_factorio_service():
     #systemctl start factorio

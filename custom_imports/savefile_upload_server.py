@@ -38,7 +38,10 @@ def upload_file():
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			flash('File(s) successfully uploaded')
 			return redirect('/')
+			print("benaan")
 
 #86.88.42.33
-if __name__ == "__main__":
-    app.run()
+
+def main():
+	if __name__ == "__main__":
+		app.run()

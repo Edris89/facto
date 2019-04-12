@@ -119,6 +119,7 @@ def check_which_version_is_installed():
     subprocess.run([""])
 
 
+
 def program_information():
     print(factorio_string)              # Prints the ASCII Art 
     latest_stable_version ,latest_experimental_version = scrape_website.scrape_website_main()
