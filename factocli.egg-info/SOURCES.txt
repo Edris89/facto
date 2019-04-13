@@ -5,7 +5,11 @@ custom_imports/Install_server.py
 custom_imports/Remove_server.py
 custom_imports/Update_server.py
 custom_imports/__init__.py
+custom_imports/install_server2.py
+custom_imports/jsontestn.py
+custom_imports/rcon.py
 custom_imports/scrape_website.py
+custom_imports/start_service.py
 factocli.egg-info/PKG-INFO
 factocli.egg-info/SOURCES.txt
 factocli.egg-info/dependency_links.txt

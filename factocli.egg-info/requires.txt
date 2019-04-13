@@ -2,3 +2,4 @@ PyInquirer
 wget
 termcolor
 bs4
+psutil

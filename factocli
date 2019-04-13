@@ -18,7 +18,7 @@ import subprocess
 import datetime
 from termcolor import colored
 import psutil
-
+import json
 
 
 #Custom Made Imports
@@ -30,7 +30,7 @@ from custom_imports import scrape_website
 from custom_imports import install_server2
 from custom_imports import start_service
 
-factocli_version = "0.3.3"
+factocli_version = "0.3.5"
 
 factorio_string = """
 ___________              __               .__         _________ .____    .___ 
@@ -119,6 +119,20 @@ def check_which_version_is_installed():
     subprocess.run([""])
 
 
+#FIXME: Load settings for service path
+def get_for_factorio_service_path_in_settings_json():
+    factorio_service_path = ""
+    with open("settings.json" , "r") as file:
+        data = json.load(file)
+        
+    factorio_service_path = data["installed_factorio_server_service_file_path"]
+
+    if(factorio_service_path != False):
+        return factorio_service_path
+    
+    else:
+        return None
+    
 
 def program_information():
     print(factorio_string)              # Prints the ASCII Art 
@@ -138,6 +152,15 @@ def program_information():
     elif server_status == False:
         server_status = colored("Offline","magenta")
     print(colored("Factorio Server: ","red")+server_status)
+
+    print(colored("-----------------------------------------------", "yellow"))
+
+    if(os.path.isfile("/home/e3s/Documents/scripts/mypackages/facto/settings.json")):
+        is_there_a_factorio_service_path = get_for_factorio_service_path_in_settings_json()
+        print(colored("Factorio Service Path: ", "red") + is_there_a_factorio_service_path)
+    
+    
+
     print("For more information visit the Github Documentation site: https://github.com/Edris89/facto")
     print("\n", end='')
     # Factocli installs the following:

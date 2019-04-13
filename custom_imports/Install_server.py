@@ -266,8 +266,15 @@ def create_service_file_in_systemd(factorio_path, file_name):
 
     with open("factorio.service", "w") as file:
         file.write(service_file_string)
-
+    
     if(os.path.isfile(systemd_path + "/" + "factorio.service")):
+        #FIXME: Service file in settings
+        factorio_service_file_path = systemd_path + "/" + "factorio.service"
+        settingsjson2 = {}
+        with open("/home/e3s/Documents/scripts/mypackages/facto/settings.json", "w+") as settings_file:
+            settingsjson2["installed_factorio_server_service_file_path"] = factorio_service_file_path
+            json.dump(settingsjson2, settings_file)
+
         print("Service file factorio.service created in /etc/systemd/system")
         chown_factorio_map_for_factorio_user(factorio_path)
 

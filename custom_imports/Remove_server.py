@@ -77,8 +77,14 @@ def remove_factorio_service_file():
         print("No factorio service file found in /etc/systemd/system")
         print("Please remove your own service file")
         print("Proceeding with the removing process...")
-        remove_process_finished()
+        remove_factocli_settings_json()
+        #remove_process_finished()
 
+def remove_factocli_settings_json():
+    settings_json_path = "/home/e3s/Documents/scripts/mypackages/facto/settings.json"
+    os.remove(settings_json_path)
+    if(os.path.isfile(settings_json_path) == False):
+        remove_process_finished()
 
 def reload_daemon():
     #systemctl daemon-reload

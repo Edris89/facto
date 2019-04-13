@@ -17,6 +17,8 @@ from pathlib import Path
 import subprocess
 import datetime
 from termcolor import colored
+import psutil
+
 
 
 #Custom Made Imports
@@ -25,6 +27,8 @@ from custom_imports import Install_server
 from custom_imports import Update_server
 from custom_imports import Remove_server
 from custom_imports import scrape_website
+from custom_imports import install_server2
+from custom_imports import start_service
 
 factocli_version = "0.3.3"
 
@@ -39,30 +43,22 @@ ___________              __               .__         _________ .____    .___
     
 
 
+
 def ask_what_to_do():
     what_to_do_prompt = {
         'type': 'list',
         'name': 'mainoption',
         'message': 'What do you want to do?',
         'choices': [
+            'Start Factorio Server Webserver and API',
+            'Stop Factorio Server Webserver and API',
             Separator(),
             'Install Latest Stable Server',
             'Install Latest Experimental Server', 
             Separator(),
             'Update Existing Server',
-            Separator(), 
-            'Install Webserver Apache2. Communicates with a TCP Socket (Socket IO)',
-            'Install Webserver nGinx. Communicates with a TCP Socket (Socket IO)',
             Separator(),
-            'Install HTTP API. For Developers (Uses flask)',
-            'Install Android App API. Required for the android app! (SocketIO)',
-            Separator(),
-            'Remove Existing Server',
-            'Remove Webserver Apache2',
-            'Remove Webserver nGinx',
-            'Remove HTTP API for developers',
-            'Remove Android API. Used by the android app',
-            Separator()
+            'Remove Existing Server'
             ]
     }
     answers = prompt(what_to_do_prompt, style=custom_style_3)
@@ -81,18 +77,46 @@ def main():
     if(option == 'Update Existing Server'):
         Update_server.update_main()
     
-    if(option == 'Get Installed Server Version'):
-        print("Getting the installed server version")
-    
     if(option == 'Remove Existing Server'):
         Remove_server.remove_server_main()
 
+    if(option == 'Start Factorio Server Webserver and API'):
+        print("Starting")
 
+    if(option == 'Stop Factorio Server Webserver and API'):
+        print("Stopping")
+
+
+
+
+
+    
 def get_date_and_time():
     date_and_time = datetime.datetime.now()
     date_and_time = str(date_and_time)
     date_and_time = date_and_time[0:19]
     return date_and_time
+
+
+
+def checkIfProcessRunning(processName):
+    '''
+    Check if there is any running process that contains the given name processName.
+    '''
+    #Iterate over the all the running process
+    for proc in psutil.process_iter():
+        try:
+            # Check if process name contains the given name string.
+            if processName.lower() in proc.name().lower():
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
+
+def check_which_version_is_installed():
+    #./factorio --version
+    subprocess.run([""])
 
 
 
@@ -103,8 +127,28 @@ def program_information():
     print(colored("Latest Factorio Experimental Version: ", "red") + latest_experimental_version)
     print(colored("Latest Factorio Stable Version: ", "red") + latest_stable_version)
     print(colored("Factocli Version: ", "red") + factocli_version)
+    
+    print(colored("-----------------------------------------------", "yellow"))
+    
+    print(colored("Factorio Installed: ", 'red') + "Not installed")
+    print(colored("Factorio Directory: ", 'red') + "/opt/factorio")
+    server_status = checkIfProcessRunning("factorio")
+    if server_status:
+        server_status = colored("Online","green")
+    elif server_status == False:
+        server_status = colored("Offline","magenta")
+    print(colored("Factorio Server: ","red")+server_status)
     print("For more information visit the Github Documentation site: https://github.com/Edris89/facto")
-    print("\n")
+    print("\n", end='')
+    # Factocli installs the following:
+    # a headless factorio server
+    # a flask webserver for the statistics 
+    # a flask api for the android app 
+    print(colored("Factocli installs the following:", "magenta"))
+    print(colored("* a headless factorio server", "magenta"))
+    print(colored("* a local flask webserver for statistics", "magenta"))
+    print(colored("* a local flask api for the android app", "magenta"))
+    print("\n", end='')
 
 
 if __name__ == '__main__':
