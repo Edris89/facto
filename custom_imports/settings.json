@@ -1,5 +1,7 @@
 {
-    "factorio-path": "",
-    "benaan": false,
-    "hoi": false
+    "installed_factorio_directory": "",
+    "installed_factorio_version": "",
+    "installed_factorio_server_service_file_path": "",
+    "installed_factorio_api_service_file_path": ""
+    
 }

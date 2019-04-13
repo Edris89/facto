@@ -126,8 +126,12 @@ def program_information():
     print(colored("Current Date and Time: ","red") + get_date_and_time())
     print(colored("Latest Factorio Experimental Version: ", "red") + latest_experimental_version)
     print(colored("Latest Factorio Stable Version: ", "red") + latest_stable_version)
-    
     print(colored("Factocli Version: ", "red") + factocli_version)
+    
+    print(colored("-----------------------------------------------", "yellow"))
+    
+    print(colored("Factorio Installed: ", 'red') + "Not installed")
+    print(colored("Factorio Directory: ", 'red') + "/opt/factorio")
     server_status = checkIfProcessRunning("factorio")
     if server_status:
         server_status = colored("Online","green")

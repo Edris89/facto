@@ -22,6 +22,12 @@ import time
 settings_file = "settings.json"
 
 
+settingsjson = {
+    "installed_factorio_directory": "",
+    "installed_factorio_version": "",
+    "installed_factorio_server_service_file_path": "",
+    "installed_factorio_api_service_file_path": ""
+}
 
 
 
@@ -153,25 +159,38 @@ def waiting_for_save_file(factorio_path):
             detected_files_list = os.listdir(saves_directory_path)
             print("detected files" + str(detected_files_list))
             
-            files = []
-            for file in detected_files_list:
-                files.append({"name" : file})
-            print(files)
+            # files = []
+            # for file in detected_files_list:
+            #     files.append({"name" : file})
+                
+            #print(files)
             #if(extensions == ".zip"):
             #print("Zip file(s) detected")
             print("Please choose the save file to use for the factorio server")
             which_save_file_prompt = [
                 {
-                    'type': 'checkbox',
+                    'type': 'list',
                     'message': 'Select save file',
-                    'name': 'whick_save_file',
-                    'choices': files,
-                    'validate': lambda answer: 'You must choose at least one save file.' \
-                        if len(answer) == 0 else True
+                    'name': 'which_save_file',
+                    'choices': detected_files_list,
+                    # 'validate': lambda answer: 'You must choose at least one save file.' \
+                    #     if len(answer) == 0 else True
                 }
             ]
-            answers = prompt(which_save_file_prompt, style=custom_style_2)
-            print(answers)
+            #FIXME: Saving the detected save file
+            answer = prompt(which_save_file_prompt, style=custom_style_2)
+            #print(answers)
+            if(answer == None):
+                print("Nothing selected. Please try again.")
+            
+            if(answer != None):
+                print(answer)
+                file_name = answer['which_save_file']
+                print(file_name)
+                create_service_file_in_systemd(factorio_path, file_name)
+                
+            
+            
         else:
             raise ValueError("%s isn't a file!" % saves_directory_path)
 
@@ -180,38 +199,6 @@ def waiting_for_save_file(factorio_path):
         print("Something went wrong creating saves directory")
     
     
-    # while(True):
-
-
-
-
-
-
-# app = Flask(__name__)
-# # app.config['UPLOAD_FOLDER']
-
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
-    
-# @app.route('/upload', methods = ['GET', 'POST'])
-# def upload_file():
-#     if request.method == 'POST':
-#         f = request.files['file']
-#         f.save(secure_filename(f.filename))
-        
-#         return 'file uploaded successfully'
-
-
-
-
-# def launch_savefile_webserver():
-#     print("Launching Upload Webserver with ngrok")
-#     p = multiprocessing.Process(target=start_savefile_webserver)
-#     p.start()
-    
-    
-
 
 
 
@@ -251,7 +238,7 @@ def create_new_save_file(factorio_path):
         #if(os.path.isfile(factorio_path + "/" + "saves" + ))
         print("New save file created")
         #create_service_file_in_systemd(factorio_path)
-        waiting_for_save_file
+        #waiting_for_save_file
     else:
         print("Something went wrong creating saves directory")
 
@@ -260,12 +247,12 @@ def create_new_save_file(factorio_path):
 
 
 
-def create_service_file_in_systemd(factorio_path):
+def create_service_file_in_systemd(factorio_path, file_name):
     #create a new service file /etc/systemd/system/factorio.service
     systemd_path = "/etc/systemd/system"
     os.chdir(systemd_path)
     
-    execstart_string = (f"{factorio_path}/bin/x64/factorio --start-server {factorio_path}/saves/my-save.zip --server-settings {factorio_path}/data/server-settings.json --rcon-port 25575 --rcon-password factory")
+    execstart_string = (f"{factorio_path}/bin/x64/factorio --start-server {factorio_path}/saves/{file_name} --server-settings {factorio_path}/data/server-settings.json --rcon-port 25575 --rcon-password factory")
 
     service_file_string =(f"""
         [Unit]
@@ -310,7 +297,7 @@ def reload_daemon(factorio_path):
     #systemctl daemon-reload
     print("Reloading daemon")
     subprocess.run(["systemctl", "daemon-reload"])
-    #start_factorio_service()
+    start_factorio_service()
     #waiting_for_save_file(factorio_path)
 
 def start_factorio_service():
