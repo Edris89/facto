@@ -26,7 +26,9 @@ settingsjson = {
     "installed_factorio_directory": "",
     "installed_factorio_version": "",
     "installed_factorio_server_service_file_path": "",
-    "installed_factorio_api_service_file_path": ""
+    "installed_factorio_api_service_file_path": "",
+    "factocli_directory_path": "",
+    "factocli_backups_directory_path": ""
 }
 
 
@@ -105,7 +107,7 @@ def make_copy_of_server_settings_json_file(factorio_path):
     shutil.copy(json_server_settings_example_file_path,json_server_settings_example_path)
     if(os.path.isfile(json_server_settings_example_path)):
         print("Server Settings Json Copied and Created")
-        waiting_for_save_file(factorio_path)
+        #waiting_for_save_file(factorio_path)
         #create_service_file_in_systemd(factorio_path)
         #launch_savefile_webserver()
         # create_save_yesorno = ask_for_creating_a_new_save_file_or_upload_your_own()
@@ -128,44 +130,34 @@ def make_copy_of_server_settings_json_file(factorio_path):
 
 
 
-def waiting_for_save_file(factorio_path):
+def waiting_for_save_file(factorio_saves_directory_path, factorio_directory_path):
     #/opt/factorio
-    print("Creating a new saves directory")
-    os.mkdir(factorio_path + "/" + "saves")
-    saves_directory_path = factorio_path + "/" + "saves"
-    if(os.path.isdir(saves_directory_path)):
+    # print("Creating a new saves directory")
+    # os.mkdir(factorio_path + "/" + "saves")
+    # saves_directory_path = factorio_path + "/" + "saves"
+    if(os.path.isdir(factorio_saves_directory_path)):
         print("Done")
         #./bin/x64/factorio --create ./saves/my-save.zip
         print("Changing directory to saves directory")
-        os.chdir(saves_directory_path)
-        list_dir = os.listdir(saves_directory_path)
+        os.chdir(factorio_saves_directory_path)
+        list_dir = os.listdir(factorio_saves_directory_path)
         print("Files in saves directory" + str(list_dir))
         print("Factorio can't start without a save file")
         # print("Waiting for a save file to be uploaded")
         print(colored("Please make a new game in factorio and save it", "magenta"))
         print(colored("When done use one of the following commands to copy your save file", "magenta"))
         print(colored("Copy file from a remote host to local host SCP example:", "magenta"))
-        print(colored(f"scp username@from_host:file.txt {saves_directory_path}", "magenta"))
+        print(colored(f"scp username@from_host:file.txt {factorio_saves_directory_path}", "magenta"))
         print(colored("Or", "magenta"))
         print(colored("Copy file from local host to a remote host SCP example:", "magenta"))
-        print(colored(f"scp file.txt username@to_host:{saves_directory_path}", "magenta"))
+        print(colored(f"scp file.txt username@to_host:{factorio_saves_directory_path}", "magenta"))
         print(colored("Waiting for a save file to be uploaded", "magenta"))
-        while not os.listdir(saves_directory_path):
+        while not os.listdir(factorio_saves_directory_path):
             time.sleep(1)
 
-        if (os.listdir(saves_directory_path)):
-            # read file
-            #print("Detected file(s)")
-            detected_files_list = os.listdir(saves_directory_path)
+        if (os.listdir(factorio_saves_directory_path)):
+            detected_files_list = os.listdir(factorio_saves_directory_path)
             print("detected files" + str(detected_files_list))
-            
-            # files = []
-            # for file in detected_files_list:
-            #     files.append({"name" : file})
-                
-            #print(files)
-            #if(extensions == ".zip"):
-            #print("Zip file(s) detected")
             print("Please choose the save file to use for the factorio server")
             which_save_file_prompt = [
                 {
@@ -177,7 +169,7 @@ def waiting_for_save_file(factorio_path):
                     #     if len(answer) == 0 else True
                 }
             ]
-            #FIXME: Saving the detected save file
+            
             answer = prompt(which_save_file_prompt, style=custom_style_2)
             #print(answers)
             if(answer == None):
@@ -187,65 +179,20 @@ def waiting_for_save_file(factorio_path):
                 print(answer)
                 file_name = answer['which_save_file']
                 print(file_name)
-                create_service_file_in_systemd(factorio_path, file_name)
+                create_service_file_in_systemd(factorio_directory_path, file_name)
                 
-            
+                
+
             
         else:
-            raise ValueError("%s isn't a file!" % saves_directory_path)
+            raise ValueError("%s isn't a file!" % factorio_saves_directory_path)
+            
 
 
     else:
         print("Something went wrong creating saves directory")
     
     
-
-
-
-def ask_for_creating_a_new_save_file_or_upload_your_own():
-    create_new_save_or_use_own_save_prompt = {
-            'type': 'confirm',
-            'name': 'save_file',
-            'message': 'Do you want to create a new save file?',
-        }
-    answers = prompt(create_new_save_or_use_own_save_prompt)
-    return answers['save_file']
-
-
-
-def ask_for_save_file_config():
-    save_file_config = {
-            'type': 'confirm',
-            'name': 'save_file_creator',
-            'message': 'Do you want to run the save file creator?',
-        }
-    answers = prompt(save_file_config)
-    return answers['save_file_creator']
-
-
-def create_new_save_file(factorio_path):
-    print("Creating a new saves directory")
-    os.mkdir(factorio_path + "/" + "saves")
-    saves_directory_path = factorio_path + "/" + "saves"
-    if(os.path.isdir(saves_directory_path)):
-        print("Done")
-        #./bin/x64/factorio --create ./saves/my-save.zip
-        print("Changing directory to create save file")
-        os.chdir(factorio_path)
-        print(factorio_path)
-        print("Creating a new save file")
-        subprocess.run(["./bin/x64/factorio", "--create", "./saves/my-save.zip"])
-        #if(os.path.isfile(factorio_path + "/" + "saves" + ))
-        print("New save file created")
-        #create_service_file_in_systemd(factorio_path)
-        #waiting_for_save_file
-    else:
-        print("Something went wrong creating saves directory")
-
-
-
-
-
 
 def create_service_file_in_systemd(factorio_path, file_name):
     #create a new service file /etc/systemd/system/factorio.service
@@ -271,7 +218,8 @@ def create_service_file_in_systemd(factorio_path, file_name):
         #FIXME: Service file in settings
         factorio_service_file_path = systemd_path + "/" + "factorio.service"
         settingsjson2 = {}
-        with open("/home/e3s/Documents/scripts/mypackages/facto/settings.json", "w+") as settings_file:
+        subprocess.run()
+        with open( + "settings.json", "w+") as settings_file:
             settingsjson2["installed_factorio_server_service_file_path"] = factorio_service_file_path
             json.dump(settingsjson2, settings_file)
 
@@ -314,6 +262,8 @@ def start_factorio_service():
     #check_if_service_is_running()
 
 
+
+
 def check_if_service_is_running():
     #systemctl is-active --quiet service
     is_service_running = subprocess.run(["systemctl", "is-active", "--quiet", "factorio.service"])
@@ -323,6 +273,52 @@ def check_if_service_is_running():
         print("Something went wrong checking if factorio.service is running")  
 
 
+
+def setting_up_factocli_directory(install_path):
+    factocli_directory = install_path + "/" + "factocli"
+    print("First setting up factocli directory in" + str(factocli_directory))
+    os.mkdir(factocli_directory)
+    if(os.path.isdir(factocli_directory)):
+        print("Created factocli directory")
+        factocli_backups_directory = factocli_directory + "/" + "factocli_backups"
+        os.mkdir(factocli_backups_directory)
+        if(os.path.isdir(factocli_backups_directory)):
+            print("Created factocli backups directory in: " + factocli_directory)
+            return(factocli_directory,factocli_backups_directory)
+            
+
+
+def add_to_settings_json(factocli_directory_path, factocli_backups_directory_path,factorio_directory_path):
+    print("Creating settings file...")
+    with open(factocli_directory_path + "/" + "settings.json", "w+") as file:
+        settingsjson["factocli_directory_path"] = factocli_directory_path
+        settingsjson["factocli_backups_directory_path"] = factocli_backups_directory_path
+        json.dump(settingsjson, file)
+    
+    if(os.path.isfile(factocli_directory_path + "/" + "settings.json")):
+        print("Factocli settings.json created in: " + factocli_directory_path)
+        return True
+    else:
+        return False
+    
+
+def create_factorio_directory(install_path):
+    print("Creating factorio directory with install path: " + install_path)
+    factorio_directory_path = install_path + "/" + "factorio"
+    os.mkdir(factorio_directory_path)
+    if(os.path.isdir(factorio_directory_path)):
+        return factorio_directory_path
+    else:
+        return False
+
+def create_factorio_saves_directory(factorio_path):
+    factorio_saves_directory_path = factorio_path + "/" + "saves"
+    print("Creating factorio saves directory in: " + factorio_saves_directory_path)    
+    os.mkdir(factorio_saves_directory_path)
+    if(os.path.isdir(factorio_saves_directory_path)):
+        return factorio_saves_directory_path
+    else:
+        return False
 
 
 def install_server(url_version):
@@ -342,9 +338,12 @@ def install_server(url_version):
                 print("The directory " + new_install_path + " exists...")
                 try:
                     #os.makedirs(install_path, exist_ok=False)
-                    print("Proceeding with the install...")
-                    #Download the latest factorio expermimental headless server file
-                    download_latest_factorio_headless_server(new_install_path,url_version)    
+                    factocli_directory_path, factocli_backups_path = setting_up_factocli_directory(install_path)
+                    factorio_directory_path = create_factorio_directory(install_path)
+                    if(add_to_settings_json(factocli_directory_path,factocli_backups_path,factorio_directory_path)):
+                        print("Proceeding with the install...")
+                        #Download the latest factorio expermimental headless server file
+                        download_latest_factorio_headless_server(new_install_path,url_version)
                 except FileExistsError:
                     # directory already exists
                     print("Error Creating the directory in " + new_install_path)        
@@ -358,15 +357,34 @@ def install_server(url_version):
                 print("The directory " + install_path + " exists...")
                 try:
                     #os.makedirs(install_path, exist_ok=False)
-                    print("Proceeding with the install...")
-                    #Download the latest factorio expermimental headless server file
-                    download_latest_factorio_headless_server(install_path,url_version)    
+                    print("0")
+                    factocli_directory_path, factocli_backups_path = setting_up_factocli_directory(install_path)
+                    print("1")
+                    factorio_directory_path = create_factorio_directory(install_path)
+                    print("2")
+                    if(add_to_settings_json(factocli_directory_path,factocli_backups_path, factorio_directory_path)):
+                        #FIXME: Wait for save file before proceeding
+                        if(factorio_directory_path == False):
+                            print("Something went wrond creating factorio directory")
+                        else:
+                            print("Factorio directory created in:" + factorio_directory_path)
+                            factorio_saves_directory_path = create_factorio_saves_directory(factorio_directory_path)
+                            if(create_factorio_saves_directory == False):
+                                print("Something went wrong creating factorio saves directory in: " + factorio_saves_directory_path)
+                            else:
+                                print("Factorio saves directory created in: " + factorio_saves_directory_path)
+                                waiting_for_save_file(factorio_saves_directory_path, factorio_directory_path)
+                                print("Save file uploaded")
+                                print("Proceeding with the install...")
+                                #Download the latest factorio expermimental headless server file
+                                download_latest_factorio_headless_server(install_path,url_version)    
                 except FileExistsError:
                     # directory already exists
                     print("Error Creating the directory in " + install_path)        
             if(path_exists == False):
                 print("The directory" + install_path + "doesn't exists")
                 print("please make sure the directory exists")
+
 
     if(yesorno == False):
         print("Please Try Again")

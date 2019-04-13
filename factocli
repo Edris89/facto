@@ -119,7 +119,7 @@ def check_which_version_is_installed():
     subprocess.run([""])
 
 
-#FIXME: Load settings for service path
+#Load settings for service path
 def get_for_factorio_service_path_in_settings_json():
     factorio_service_path = ""
     with open("settings.json" , "r") as file:
