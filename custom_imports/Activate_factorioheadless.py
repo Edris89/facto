@@ -9,7 +9,7 @@ import os
 import sys
 import json
 
-
+# {"installed_factorio_directory": "", "installed_factorio_version": "", "installed_factorio_server_service_file_path": "", "installed_factorio_api_service_file_path": "", "factocli_directory_path": "/opt/factocli", "factocli_backups_directory_path": "/opt/factocli/factocli_backups", "servers": [{"server-name": "Server 1", "access-token": "", "server-token": "", "server-path": "", "server-version": "", "server-activated": false}, {"server-name": "Server 2", "access-token": "asdfsdf", "server-token": "asdfsdf", "server-path": "", "server-version": "", "server-activated": false}]}
 factocli_settings_path = "/opt/factocli/settings.json"
 
 # {
