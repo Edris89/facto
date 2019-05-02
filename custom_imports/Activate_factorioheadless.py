@@ -33,9 +33,9 @@ def write_to_json_settings(accesstoken,servertoken):
         "access-token": accesstoken,
         "server-token": servertoken,
     }
-    # data['servers'].append(server_data)
-    # with open(factocli_settings_path, 'w+') as file:
-    #     json.dump(data,file)
+    data['servers'].append(server_data)
+    with open(factocli_settings_path, 'w+') as file:
+        json.dump(data,file)
     
     #print(json.dumps(data))
 
@@ -103,6 +103,7 @@ def check_if_there_are_servers():
                     print("Please provide a server and a access token provided by your factorioheadless.com dashboard")
     elif(data['servers'] == False):
         print("There were no servers found")
+
 
 
 
