@@ -29,6 +29,7 @@ from custom_imports import Remove_server
 from custom_imports import scrape_website
 from custom_imports import install_server2
 from custom_imports import start_service
+from custom_imports import Activate_factorioheadless
 
 factocli_version = "0.3.5"
 
@@ -50,6 +51,8 @@ def ask_what_to_do():
         'name': 'mainoption',
         'message': 'What do you want to do?',
         'choices': [
+            'Activate factorioheadless',
+            Separator(),
             'Start Factorio Server Webserver and API',
             'Stop Factorio Server Webserver and API',
             Separator(),
@@ -68,6 +71,9 @@ def ask_what_to_do():
 
 def main():
     option = ask_what_to_do()
+    if(option == 'Activate factorioheadless'):
+        Activate_factorioheadless.main()
+    
     if(option == 'Install Latest Experimental Server'):
         Install_server.experimental_server_main()
 

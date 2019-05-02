@@ -264,6 +264,7 @@ def start_factorio_service():
 
 
 
+
 def check_if_service_is_running():
     #systemctl is-active --quiet service
     is_service_running = subprocess.run(["systemctl", "is-active", "--quiet", "factorio.service"])
